@@ -5,18 +5,19 @@ namespace AbdelhamidErrahmouni\LaravelABTesting;
 use AbdelhamidErrahmouni\LaravelABTesting\Models\Experiment;
 use Illuminate\Http\Request;
 
-class LaravelABTesting {
-
+class LaravelABTesting
+{
     /**
      * Track clicked links and form submissions.
      *
-     * @param  Request $request
      * @return void
      */
     public function track(Request $request)
     {
         // Don't track if there is no active experiment.
-        if ( ! Experiment::whereActive()->count()) return;
+        if (! Experiment::whereActive()->count()) {
+            return;
+        }
 
         // Since there is an ongoing experiment, increase the pageviews.
         // This will only be incremented once during the whole experiment.
@@ -28,7 +29,9 @@ class LaravelABTesting {
         $to = ltrim(str_replace($root, '', $request->getPathInfo()), '/');
 
         // Don't track refreshes.
-        if ($from == $to) return;
+        if ($from == $to) {
+            return;
+        }
 
         // Because the visitor is viewing a new page, trigger engagement.
         // This will only be incremented once during the whole experiment.
@@ -37,14 +40,12 @@ class LaravelABTesting {
         $goals = $this->getGoals();
 
         // Detect goal completion based on the current url.
-        if (in_array($to, $goals) or in_array('/' . $to, $goals))
-        {
+        if (in_array($to, $goals) or in_array('/'.$to, $goals)) {
             $this->complete($to);
         }
 
         // Detect goal completion based on the current route name.
-        if ($route = Route::currentRouteName() and in_array($route, $goals))
-        {
+        if ($route = Route::currentRouteName() and in_array($route, $goals)) {
             $this->complete($route);
         }
     }
@@ -60,8 +61,7 @@ class LaravelABTesting {
         // Get the existing or new experiment.
         $experiment = $this->session->get('experiment') ?: $this->nextExperiment();
 
-        if (is_null($target))
-        {
+        if (is_null($target)) {
             return $experiment;
         }
 
@@ -76,7 +76,9 @@ class LaravelABTesting {
     public function pageview()
     {
         // Only interact once per experiment.
-        if ($this->session->get('pageview')) return;
+        if ($this->session->get('pageview')) {
+            return;
+        }
 
         $experiment = Experiment::firstOrNew(['name' => $this->experiment()]);
         $experiment->visitors++;
@@ -94,7 +96,9 @@ class LaravelABTesting {
     public function interact()
     {
         // Only interact once per experiment.
-        if ($this->session->get('interacted')) return;
+        if ($this->session->get('interacted')) {
+            return;
+        }
 
         $experiment = Experiment::firstOrNew(['name' => $this->experiment()]);
         $experiment->engagement++;
@@ -112,7 +116,9 @@ class LaravelABTesting {
     public function complete($name)
     {
         // Only complete once per experiment.
-        if ($this->session->get("completed_$name")) return;
+        if ($this->session->get("completed_$name")) {
+            return;
+        }
 
         $goal = Goal::firstOrCreate(['name' => $name, 'experiment' => $this->experiment()]);
         Goal::where('name', $name)->where('experiment', $this->experiment())->update(['count' => ($goal->count + 1)]);
@@ -124,12 +130,11 @@ class LaravelABTesting {
     /**
      * Set the current experiment for this session manually.
      *
-     * @param string $experiment
+     * @param  string  $experiment
      */
     public function setExperiment($experiment)
     {
-        if ($this->session->get('experiment') != $experiment)
-        {
+        if ($this->session->get('experiment') != $experiment) {
             $this->session->set('experiment', $experiment);
 
             // Increase pageviews for new experiment.
@@ -170,7 +175,7 @@ class LaravelABTesting {
     /**
      * Set the session instance.
      *
-     * @param $session SessionInterface
+     * @param  $session  SessionInterface
      */
     public function setSession(SessionInterface $session)
     {
@@ -187,12 +192,9 @@ class LaravelABTesting {
         // Verify that the experiments are in the database.
         $this->checkExperiments();
 
-        if ($experiment)
-        {
+        if ($experiment) {
             $experiment = Experiment::active()->findOrfail($experiment);
-        }
-        else
-        {
+        } else {
             $experiment = Experiment::active()->orderBy('visitors', 'asc')->firstOrFail();
         }
 
@@ -213,11 +215,9 @@ class LaravelABTesting {
     protected function checkExperiments()
     {
         // Check if the database contains all experiments.
-        if (Experiment::active()->count() != count($this->getExperiments()))
-        {
+        if (Experiment::active()->count() != count($this->getExperiments())) {
             // Insert all experiments.
-            foreach ($this->getExperiments() as $experiment)
-            {
+            foreach ($this->getExperiments() as $experiment) {
                 Experiment::firstOrCreate(['name' => $experiment]);
             }
         }

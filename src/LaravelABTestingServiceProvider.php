@@ -2,9 +2,9 @@
 
 namespace AbdelhamidErrahmouni\LaravelABTesting;
 
+use AbdelhamidErrahmouni\LaravelABTesting\Commands\LaravelABTestingCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use AbdelhamidErrahmouni\LaravelABTesting\Commands\LaravelABTestingCommand;
 
 class LaravelABTestingServiceProvider extends PackageServiceProvider
 {

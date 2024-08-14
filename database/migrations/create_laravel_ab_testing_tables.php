@@ -8,10 +8,8 @@ return new class extends Migration
 {
     public function up()
     {
-        if ( ! Schema::hasTable('experiments'))
-        {
-            Schema::create('experiments', function(Blueprint $table)
-            {
+        if (! Schema::hasTable('experiments')) {
+            Schema::create('experiments', function (Blueprint $table) {
                 $table->id();
                 $table->string('name')->unique();
                 $table->integer('visitors')->unsigned()->default(0);
@@ -21,10 +19,8 @@ return new class extends Migration
             });
         }
 
-        if ( ! Schema::hasTable('goals'))
-        {
-            Schema::create('goals', function(Blueprint $table)
-            {
+        if (! Schema::hasTable('goals')) {
+            Schema::create('goals', function (Blueprint $table) {
                 $table->id();
                 $table->string('name')->unique();
                 $table->foreignId('experiment_id')->constrained('experiments')->onDelete('cascade');

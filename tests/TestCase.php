@@ -2,9 +2,9 @@
 
 namespace AbdelhamidErrahmouni\LaravelABTesting\Tests;
 
+use AbdelhamidErrahmouni\LaravelABTesting\LaravelABTestingServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use AbdelhamidErrahmouni\LaravelABTesting\LaravelABTestingServiceProvider;
 
 class TestCase extends Orchestra
 {
